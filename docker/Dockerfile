@@ -27,6 +27,9 @@ COPY . /ros2_ws/src
 # Install Python requirements (with numpy constraint)
 RUN cd src && pip install -r requirements.txt
 
+# 1. 修复子模块，# 2. 安装缺失的 Python 依赖
+RUN git submodule update --init --recursive && pip install aioice pydub
+
 # Install ROS dependencies
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
     rosdep install --from-paths src --ignore-src -r -y

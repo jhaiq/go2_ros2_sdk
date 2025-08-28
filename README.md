@@ -109,6 +109,24 @@ Run:
 ```shell
 cd docker
 ROBOT_IP=<ROBOT_IP> CONN_TYPE=<webrtc/cyclonedds> docker-compose up --build
+
+2. 再次启动已经构建的docker
+# 启动容器
+docker compose up -d
+
+# 进入容器
+docker exec -it docker-unitree_ros-1 /bin/bash
+
+#检查连接环境
+echo $ROBOT_IP
+echo $CONN_TYPE
+
+#如果没有配置，配置相关参数：
+export ROBOT_IP="robot_ip" #for muliple robots, just split by ,
+export CONN_TYPE="webrtc"
+
+#启动launch
+ros2 launch go2_robot_sdk robot.launch.py
 ```
 
 ## Usage
@@ -336,3 +354,114 @@ Special thanks to:
 ## License
 
 This project is licensed under the BSD 2-clause License - see the [LICENSE](https://github.com/abizovnuralem/go2_ros2_sdk/blob/master/LICENSE) file for details.
+
+
+
+source install/setup.bash
+export ROBOT_IP="192.168.109.87"
+export CONN_TYPE="webrtc"
+ros2 launch go2_robot_sdk robot.launch.py
+
+
+
+## 错误：
+### 1. 问题 1: go2_driver_node 启动失败，aioice未初始化：
+[go2_driver_node-1] aioice submodule is not initalized. please init submodules recursively
+
+##### 解决方案：
+```
+    ###### 1. 修复子模块
+    cd /ros2_ws/src/go2_ros2_sdk
+    git submodule update --init --recursive
+
+    ###### 2. 安装缺失的 Python 依赖
+    pip install aioice pydub
+
+    ###### 3. 重新编译
+    cd /ros2_ws
+    colcon build
+
+    ###### 4. 测试单个节点
+    source install/setup.bash
+    ros2 run go2_robot_sdk go2_driver_node
+```
+### 2. 问题 2: tts_node 没有配置API key
+[tts_node-4] [ERROR] [1756350241.725153091] [tts_node]: ElevenLabs API key not provided!
+[tts_node-4] [ERROR] [1756350241.725767858] [tts_node]: Failed to initialize TTS provider!
+##### 解决方案：
+###### 1. 获取 ElevenLabs API 密钥
+
+首先需要注册 ElevenLabs 账号并获取 API 密钥：
+
+    访问 ElevenLabs
+
+    创建账号并获取 API 密钥
+
+###### 2. 通过环境变量设置 API 密钥
+
+```
+    # 设置环境变量
+    export ELEVENLABS_API_KEY=your_actual_api_key_here
+
+    # 然后重新启动 launch
+    ros2 launch go2_robot_sdk webrtc_web.launch.py
+```
+######  如果不需要 TTS，禁用该节点
+修改 launch 文件，注释掉或删除 tts_node：
+
+```
+    # 注释掉 tts_node
+    # Node(
+    #     package='speech_processor',
+    #     executable='tts_node',
+    #     name='tts_node',
+    #     output='screen'
+    # ),
+```
+
+######  使用其他 TTS 提供商（如果支持）
+查看 speech_processor 包是否支持其他 TTS 提供商，比如本地 TTS：
+
+```
+Node(
+    package='speech_processor',
+    executable='tts_node',
+    name='tts_node',
+    output='screen',
+    parameters=[{
+        'tts_provider': 'local',  # 或者 'system', 'festival' 等
+        'elevenlabs_api_key': ''   # 留空如果使用本地 TTS
+    }]
+),
+```
+### docker 中运行与调试：
+1.首次运行：
+cd docker
+ROBOT_IP=<ROBOT_IP> CONN_TYPE=<webrtc/cyclonedds> ELEVENLABS_API_KEY=<API key> docker-compose up 
+
+#ROBOT_IP="192.168.109.87" CONN_TYPE="webrtc" ELEVENLABS_API_KEY='your api key' docker-compose up --build 
+
+2.非首次运行，docker中调试
+#export ROBOT_IP="192.168.109.87"
+#export CONN_TYPE="webrtc"
+#export ELEVENLABS_API_KEY='your api key'
+
+
+# 启动容器
+DOCKER_CMD="bash -c 'echo hello'" docker compose up -d
+
+# 进入容器
+docker exec -it docker-unitree_ros-1 /bin/bash
+
+#检查连接环境
+echo $ROBOT_IP
+echo $CONN_TYPE
+
+#如果没有配置，配置相关参数：
+export ROBOT_IP="robot_ip" #for muliple robots, just split by ,
+export CONN_TYPE="webrtc"
+export ELEVENLABS_API_KEY=“”
+
+#启动launch
+ros2 launch go2_robot_sdk robot.launch.py
+
