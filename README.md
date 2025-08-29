@@ -365,6 +365,17 @@ ros2 launch go2_robot_sdk robot.launch.py
 
 
 ## 错误：
+
+speech_processor: Cannot locate rosdep definition for [ament_python]
+
+##### 解决方案：
+```
+apt update
+sudo apt install python3-ament-package
+
+rosdep install --from-paths src --ignore-src -r -y --skip-keys="ament_python"
+```
+
 ### 1. 问题 1: go2_driver_node 启动失败，aioice未初始化：
 [go2_driver_node-1] aioice submodule is not initalized. please init submodules recursively
 
@@ -448,7 +459,7 @@ ROBOT_IP=<ROBOT_IP> CONN_TYPE=<webrtc/cyclonedds> ELEVENLABS_API_KEY=<API key> d
 
 
 # 启动容器
-DOCKER_CMD="bash -c 'echo hello'" docker compose up -d
+DOCKER_CMD="bash" docker compose up -d
 
 # 进入容器
 docker exec -it docker-unitree_ros-1 /bin/bash
@@ -456,7 +467,7 @@ docker exec -it docker-unitree_ros-1 /bin/bash
 #检查连接环境
 echo $ROBOT_IP
 echo $CONN_TYPE
-
+echo $ELEVENLABS_API_KEY
 #如果没有配置，配置相关参数：
 export ROBOT_IP="robot_ip" #for muliple robots, just split by ,
 export CONN_TYPE="webrtc"
@@ -465,3 +476,6 @@ export ELEVENLABS_API_KEY=“”
 #启动launch
 ros2 launch go2_robot_sdk robot.launch.py
 
+
+
+DOCKER_CMD="bash" ROBOT_IP="192.168.109.87" CONN_TYPE="webrtc" ELEVENLABS_API_KEY='sk_6b3015dc41ca34a181b1ef02805cf5d6e20754dd0d8b863e' docker compose up -d

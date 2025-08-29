@@ -3,10 +3,11 @@
 #docker compose up
 
 # 覆盖CMD
-#DOCKER_CMD="bash -c 'echo hello'" docker compose up
+#DOCKER_CMD="bash" docker compose up -d
 
 services:
   unitree_ros:
+    container_name: unitree_ros_webrtc_0829
     image: docker-unitree_ros:latest
     build:
       context: ..
@@ -20,6 +21,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix  # X11 forwarding
       - ${HOME}/.Xauthority:/root/.Xauthority:rw
+      - /home/jhq/work:/root/jhq/work
     network_mode: "host"  # Required for ROS2 discovery and robot communication
     privileged: true  # Required for hardware access
     command: ${DOCKER_CMD:-}  # 如果未设置DOCKER_CMD，则使用镜像默认CMD
