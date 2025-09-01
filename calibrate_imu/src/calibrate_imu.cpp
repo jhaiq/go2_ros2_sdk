@@ -84,15 +84,11 @@ void estimate_bias(){
     // Constant bias from static
     int static_count = 0;
     int positive_rot_count = 0;
-    int negative_rot_count = 0;
 
     double ang_rot_x_mean_positive = 0;
     double ang_rot_y_mean_positive = 0;
     double ang_rot_z_mean_positive = 0;
 
-    double ang_rot_x_mean_negative = 0;
-    double ang_rot_y_mean_negative = 0;
-    double ang_rot_z_mean_negative = 0;
     
     std::cout << "static size:" << imu_static.size() << std::endl;
     std::cout << "pos size:" << imu_rotation_positive_z.size() << std::endl;
