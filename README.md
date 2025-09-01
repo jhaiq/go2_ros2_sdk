@@ -213,7 +213,9 @@ The detection messages contain the detected object (`class_id`) and the `score`,
 To view the image stream annotated with the labels and bounding boxes:
 ```shell
 source install/setup.bash
-ros2 run image_tools showimage --ros-args -r /image:=/annotated_image
+ros2 run image_tools showimage --ros-apip install aioice pydub
+cd /ros2_ws
+colcon buildrgs -r /image:=/annotated_image
 ```
 
 Example Use:
@@ -336,3 +338,10 @@ Special thanks to:
 ## License
 
 This project is licensed under the BSD 2-clause License - see the [LICENSE](https://github.com/abizovnuralem/go2_ros2_sdk/blob/master/LICENSE) file for details.
+
+
+
+source install/setup.bash
+export ROBOT_IP="192.168.109.87"
+export CONN_TYPE="webrtc"
+ros2 launch go2_robot_sdk robot.launch.py
